@@ -52,7 +52,15 @@ class AnomalyDetection:
             if F1 > self.bestF1:
                 self.bestF1 = F1
                 self.epsilon = epsilon
-    
+
+    def predict(self, data):
+        '''
+        function predicts anomalies in data 
+        '''
+        p = self.density_estimation(data, self.mu, self.sigma2)
+        predictions = np.where(p < self.epsilon, 1, 0)  
+        return predictions
+            
     
 # load data 
 data = pd.read_csv('data.csv', header=None)
@@ -67,5 +75,5 @@ detector.fit(X)
 pval = detector.density_estimation(xval, detector.mu, detector.sigma2)
 detector.select_threshold(pval, yval)
 print(detector.epsilon, detector.bestF1)
-p = detector.density_estimation(X, detector.mu, detector.sigma2)
-print(sum(np.where(p < detector.epsilon, 1, 0)))
+p = detector.predict(X)
+print(p[:10])
